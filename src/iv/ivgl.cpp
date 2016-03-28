@@ -749,6 +749,12 @@ IvGL::paint_pixelview ()
     int xp, yp;
     get_focus_image_pixel (xp, yp);
 
+    // Clear any bound PBO
+    if (m_use_pbo)
+    {
+        glBindBufferARB (GL_PIXEL_UNPACK_BUFFER_ARB, 0);
+    }
+
     glPushMatrix ();
     // Transform is now same as the main GL viewport -- window pixels as
     // units, with (0,0) at the center of the visible window.
@@ -840,10 +846,8 @@ IvGL::paint_pixelview ()
 
         GLenum glformat, gltype, glinternalformat;
         typespec_to_opengl (spec, nchannels, gltype, glformat, glinternalformat);
+
         // Use pixelview's own texture, and upload the corresponding image patch.
-        if (m_use_pbo) {
-            glBindBufferARB (GL_PIXEL_UNPACK_BUFFER_ARB, 0);
-        }
         glBindTexture (GL_TEXTURE_2D, m_pixelview_tex);
         glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 
                          xend-xbegin, yend-ybegin,
